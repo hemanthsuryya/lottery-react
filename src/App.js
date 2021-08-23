@@ -29,18 +29,31 @@ class App extends Component {
 
   onSubmit = async event => {//In this method we don't need to worry about inding 'this'.
     event.preventDefault();
-    const accounts = await web3.eth.getAccounts();
-    console.log(accounts[0]);
+    // const accounts = await web3.eth.getAccounts();
+    var acc = web3.currentProvider.selectedAddress;
+    console.log(acc);
     this.setState({message: 'Waiting on transaction success...'})
 
     await lottery.methods.enter().send({
-      from: accounts[0],
+      from: acc,
       value: web3.utils.toWei(this.state.value, 'ether'),
       gasPrice: '20000000000'
     });
 
     this.setState({message: 'You have been entered!!'});
   };
+
+  onClick = async event => {
+    event.preventDefault();
+    // const accounts = await web3.eth.getAccounts();
+    var acc = web3.currentProvider.selectedAddress;
+    this.setState({message: 'Waiting on tx success(pick winner)'});
+    await lottery.methods.pickWinner().send({
+      from: acc,
+      gasPrice: '20000000000'
+    });
+    this.setState({message: 'A winner has been picked!'});
+  }
 
   render(){
     return (
@@ -63,6 +76,7 @@ class App extends Component {
         </form>
         <hr />
         <h4>Ready to pick winner</h4>
+        <button onClick={this.onClick}>Pick a Winner</button>
         <hr />
         <h2>{this.state.message}</h2>
       </div>
